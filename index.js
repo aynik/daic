@@ -26,6 +26,8 @@ var port = process.env.PORT || 7000
 var CoinbaseClient = coinbase.Client
 var LocalStrategy = passportLocal.Strategy
 var User = models.User
+var Activity = models.Activity
+var Order = models.Order
 
 app.set('views', __dirname + '/views')
 app.engine('html', swig.renderFile);
@@ -140,6 +142,7 @@ var processActivities = function (next) {
       var hours = Math.ceil(minutes / 60)
       var mins = minutes % 60
       return next(null, {
+        until: activity.timestamp,
         daily: daily,
         dates: dates,
         usd: usd,
@@ -158,34 +161,38 @@ var processActivities = function (next) {
 }
 
 router.get('/current', ensureAuth, function (req, res) {
-  var op = models.Activity.find({ _archived: false })
+  var op = Activity.find({ _archived: false })
     .sort('timestamp').populate('user')
   op.exec(processActivities(function (err, result) {
     if (err) return res.status(500)
     if (result.dates.length) {
-      return coinbaseClient.createCheckout({
-        amount: result.usd.toFixed(2),
-        currency: 'USD',
-        name: 'Development services',
-        description: result.hours + 'h ' +
-          result.mins + 'm ' +
-          'between ' + result.dates[0] +
-          ' and ' + result.dates[dates.length-1],
-        type: 'order',
-        style: 'custom_large',
-        success_url: 'http://daic-smoogs.herokuapp.com/current',
-        cancel_url: 'http://daic-smoogs.herokuapp.com/current',
-        auto_redirect: true,
-        metadata: {
-          until: result.activities[result.activities.length-1].timestamp 
-        }
-      }, function (err, checkout) {
-        if (err) return res.status(500)
-        res.render('activity', { 
-          active: 'current',
-          prefix: prefix, 
-          daily: result.daily, 
-          checkout: checkout 
+      var order = new Order({ until: result.until })
+      return order.save(function (err, order) {
+        coinbaseClient.createCheckout({
+          amount: result.usd.toFixed(2),
+          currency: 'USD',
+          name: 'Development services',
+          description: result.hours + 'h ' +
+            result.mins + 'm ' +
+            'between ' + result.dates[0] +
+            ' and ' + result.dates[dates.length-1],
+          type: 'order',
+          style: 'custom_large',
+          success_url: 'http://daic-smoogs.herokuapp.com/current',
+          cancel_url: 'http://daic-smoogs.herokuapp.com/current',
+          auto_redirect: true,
+          metadata: {
+            order: order.id 
+          }
+        }, function (err, checkout) {
+          if (err) return res.status(500)
+          res.render('activity', { 
+            active: 'current',
+            prefix: prefix, 
+            daily: result.daily, 
+            checkout: checkout,
+            order: order
+          })
         })
       })
     } 
@@ -199,7 +206,7 @@ router.get('/current', ensureAuth, function (req, res) {
 })
 
 router.get('/archived', ensureAuth, function (req, res) {
-  var op = models.Activity.find({ _archived: true })
+  var op = Activity.find({ _archived: true })
     .sort('timestamp').populate('user')
   op.exec(processActivities(function (err, result) {
     if (err) return res.status(500)
@@ -221,16 +228,14 @@ router.get('/archived', ensureAuth, function (req, res) {
 })
 
 router.post('/ack', function (req, res) {
-  console.log(req.query)
-  console.log(req.params)
-  console.log(req.body)
+  console.log("CUSTOM", req.params.order.custom)
   res.end()
 })
 
 router.get('/media/:hash', function (req, res) {
   var params = req.params
   var query = { hash: params.hash }
-  models.Activity.findOne(query, function (err, activity) {
+  Activity.findOne(query, function (err, activity) {
     if (err) return res.status(500)
     res.setHeader('Content-Type', 'image/jpg')
     res.send(activity._image)
@@ -257,7 +262,7 @@ var ensureCreatorRest = function (req, res, next) {
   res.sendStatus(403)
 }
 
-restify.serve(router, models.Activity, {
+restify.serve(router, Activity, {
   plural: true,
   lowercase: true,
   preMiddleware: ensureAuthRest,
@@ -267,7 +272,7 @@ restify.serve(router, models.Activity, {
   preDelete: ensureCreatorRest
 })
 
-restify.serve(router, models.User, {
+restify.serve(router, User, {
   plural: true,
   lowercase: true,
   preMiddleware: ensureAuthRest,

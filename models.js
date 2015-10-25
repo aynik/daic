@@ -56,8 +56,18 @@ activitySchema.methods.archive = function () {
 
 var Activity = mongoose.model('Activity', activitySchema)
 
+var orderSchema = Schema({
+  until: Date
+}, { 
+  autoIndex: true,
+  versionKey: false
+}) 
+
+var Order = mongoose.model('Order', orderSchema)
+
 module.exports = {
   User: User,
   Activity: Activity,
+  Order: Order,
   mongoose: mongoose
 }
