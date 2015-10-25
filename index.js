@@ -118,10 +118,9 @@ router.get('/', ensureAuth, function (req, res) {
   res.redirect('/current')
 })
 
-router.get('/current', ensureAuth, function (req, res) {
-  
-  var op = models.Activity.find().sort('timestamp').populate('user')
-  op.exec(function (err, activities) {
+var processActivities = function (next) {
+  return function (err, activities) {
+    if (err) return next(err)
     if (activities && activities.length) {
       var activity
       var date
@@ -140,35 +139,92 @@ router.get('/current', ensureAuth, function (req, res) {
       })
       var hours = Math.ceil(minutes / 60)
       var mins = minutes % 60
+      return next(null, {
+        daily: daily,
+        dates: dates,
+        usd: usd,
+        hours: hours,
+        mins: mins
+      }) 
+    }
+    next(null, {
+      daily: {},
+      dates: [],
+      usd: 0,
+      hours: 0,
+      mins: 0
+    })
+  }
+}
+
+router.get('/current', ensureAuth, function (req, res) {
+  var op = models.Activity.find({ _archived: false })
+    .sort('timestamp').populate('user')
+  op.exec(processActivities(function (err, result) {
+    if (err) return res.status(500)
+    if (result.dates.length) {
       return coinbaseClient.createCheckout({
-        amount: usd.toFixed(2),
+        amount: result.usd.toFixed(2),
         currency: 'USD',
         name: 'Development services',
-        description: hours + 'h ' + mins + 'm ' +
-          'between ' + dates[0] + ' and ' + dates[dates.length-1],
+        description: result.hours + 'h ' +
+          result.mins + 'm ' +
+          'between ' + result.dates[0] +
+          ' and ' + result.dates[dates.length-1],
         type: 'order',
-        style: 'custom_small',
+        style: 'custom_large',
         success_url: 'http://daic-smoogs.herokuapp.com/current',
         cancel_url: 'http://daic-smoogs.herokuapp.com/current',
         auto_redirect: true,
         metadata: {
-          until: activities[activities.length-1].timestamp 
+          until: result.activities[result.activities.length-1].timestamp 
         }
       }, function (err, checkout) {
         if (err) return res.status(500)
         res.render('activity', { 
+          active: 'current',
           prefix: prefix, 
-          daily: daily, 
+          daily: result.daily, 
           checkout: checkout 
         })
       })
-    }
+    } 
     res.render('activity', { 
+      active: 'current',
       prefix: prefix, 
       daily: {}, 
       checkout: {} 
     })
   })
+})
+
+router.get('/archived', ensureAuth, function (req, res) {
+  var op = models.Activity.find({ _archived: true })
+    .sort('timestamp').populate('user')
+  op.exec(processActivities(function (err, result) {
+    if (err) return res.status(500)
+    if (result.dates.length) {
+      return res.render('activity', { 
+        active: 'archived',
+        prefix: prefix, 
+        daily: result.daily, 
+        checkout: {} 
+      })
+    } 
+    res.render('activity', { 
+      active: 'archived',
+      prefix: prefix, 
+      daily: {}, 
+      checkout: {} 
+    })
+  })
+})
+
+router.post('/ack', function (req, res) {
+  console.log(req.query)
+  console.log(req.params)
+  console.log(req.body)
+  res.end()
 })
 
 router.get('/media/:hash', function (req, res) {

@@ -27,6 +27,7 @@ var activitySchema = Schema({
   keystrokes: Number,
   timedelta: Number,
   timestamp: Date, 
+  _archived: Boolean,
   _image: Buffer
 }, {
   autoIndex: true,
@@ -34,6 +35,10 @@ var activitySchema = Schema({
 })
 
 activitySchema.pre('save', function (next) {
+  if (this.isNew) {
+    this._archived = false
+  }
+
   this.hash = crypto.createHash('sha256')
     .update(this._image).digest('hex')
   next()
@@ -44,6 +49,10 @@ activitySchema.virtual('image').set(function (str) {
 }).get(function () {
   return this._image.toSring('base64')
 })
+
+activitySchema.methods.archive = function () {
+  this._archived = true
+}
 
 var Activity = mongoose.model('Activity', activitySchema)
 

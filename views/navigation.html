@@ -4,8 +4,16 @@
     <span class="description">daily activity information center</span>
   </section>
   <nav class="clearfix">
-    <span class="active">Current</span>
-    <a href="/archived">Archived</a>
+    {% if active === 'current' %}
+      <span class="active">Current</span>
+    {% elif %}
+       <a href="/current">Current</a>
+    {% endif %}
+    {% if active === 'archived' %}
+      <span class="active">Archived</span>
+    {% elif %}
+       <a href="/archived">Archived</a>
+    {% endif %}
     <span class="logout"></span>
     <a href="/logout">Logout</a>
   </nav>
