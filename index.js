@@ -130,9 +130,12 @@ var processActivities = function (next) {
       var minutes = 0
       for (var a = 0, l = activities.length; a < l; a++) {
         activity = activities[a]
+        activity.minutes = activity.timedelta / 1000 / 60
+        activity.score = activity.keystrokes / 4
+        activity.minuteScore = activity.score / activity.minutes
         date = activity.timestamp.toISOString().split('T')[0]
         daily[date] = daily[date] || []
-        daily[date].push(activities[a])
+        daily[date].push(activity)
         minutes += Math.round(activity.timedelta / 1000 / 60) 
       } 
       var usd = minutes * USD_RATE 

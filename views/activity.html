@@ -14,16 +14,15 @@
           </li>
         </ul>
         {% for activity in activities %}
-          {% set minutes = activity.timedelta / 1000 / 60 %}
-          {% set score = (activity.keystrokes / 4) / minutes %}
           <div class="box">
             <a class="boxInner">
               <img src="/media/{{ activity.hash }}">
-              <div class="activity" style="width: {{ score.toFixed(2) }}%"></div>
+              <div class="activity" style="width: 
+                {{ activity.minuteScore.toFixed(2) }}%"></div>
               <div class="titleBox">
                 <span>{{ activity.user.username }}</span> -
                 <span>{{ activity.timestamp|date('H:i:s') }}</span> -
-                <span>{{ minutes.toFixed(0) }}mins</span>
+                <span>{{ activity.minutes.toFixed(0) }}mins</span>
               </div>
             </a>
           </div>
