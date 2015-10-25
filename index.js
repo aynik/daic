@@ -195,7 +195,7 @@ router.get('/current', ensureAuth, function (req, res) {
       daily: {}, 
       checkout: {} 
     })
-  })
+  }))
 })
 
 router.get('/archived', ensureAuth, function (req, res) {
