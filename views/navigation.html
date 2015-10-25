@@ -6,12 +6,12 @@
   <nav class="clearfix">
     {% if active === 'current' %}
       <span class="active">Current</span>
-    {% elif %}
+    {% else %}
        <a href="/current">Current</a>
     {% endif %}
     {% if active === 'archived' %}
       <span class="active">Archived</span>
-    {% elif %}
+    {% else %}
        <a href="/archived">Archived</a>
     {% endif %}
     <span class="logout"></span>
