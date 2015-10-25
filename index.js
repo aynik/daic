@@ -139,7 +139,7 @@ var processActivities = function (next) {
       var dates = Object.keys(daily).map(function (date) {
         return date.split('-').reverse().join('/')
       })
-      var hours = Math.ceil(minutes / 60)
+      var hours = Math.floor(minutes / 60)
       var mins = minutes % 60
       return next(null, {
         until: activity.timestamp,
@@ -228,7 +228,7 @@ router.get('/archived', ensureAuth, function (req, res) {
 })
 
 router.post('/ack', function (req, res) {
-  console.log("CUSTOM", req.params.order.custom)
+  console.log("CUSTOM", req.body.order.custom)
   res.end()
 })
 
