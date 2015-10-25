@@ -9,8 +9,9 @@
         <br class="clearfix">
         <ul class="tags">
           <li>
-            {% set fst = activities[0].timestamp %}
-            <span class="tag">{{ fst|date('D, d M Y') }}</span>
+            <span class="tag">
+              {{ activities[0].timestamp|date('D, d M Y') }}
+            </span>
           </li>
         </ul>
         {% for activity in activities %}
