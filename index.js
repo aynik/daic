@@ -122,7 +122,7 @@ router.get('/current', ensureAuth, function (req, res) {
   
   var op = models.Activity.find().sort('timestamp').populate('user')
   op.exec(function (err, activities) {
-    if (activities) {
+    if (activities && activities.length) {
       var activity
       var date
       var daily = {}
@@ -140,7 +140,7 @@ router.get('/current', ensureAuth, function (req, res) {
       })
       var hours = Math.ceil(minutes / 60)
       var mins = minutes % 60
-      coinbaseClient.createCheckout({
+      return coinbaseClient.createCheckout({
         amount: usd.toFixed(2),
         currency: 'USD',
         name: 'Development services',
