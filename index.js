@@ -229,21 +229,17 @@ router.get('/archived', ensureAuth, function (req, res) {
 
 router.post('/ack', function (req, res) {
   var body = req.body
-  console.log("ACK", body)
   if (body.order && body.order.custom) {
     var orderId = body.order.custom
-    return Order.findById(orderId, function (err, order) {
-      if (err || !order) return res.status(304)
+    Order.findById(orderId, function (err, order) {
       Activity.findAndArchive({ 
         timestamp: { $lte: order.until }
       }, function (err) {
-        if (err) return res.status(304)
         order.remove()
-        res.status(200) 
       })
     })
   }
-  res.status(304)
+  res.status(200)
 })
 
 router.get('/media/:hash', function (req, res) {

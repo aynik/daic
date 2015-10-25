@@ -20,6 +20,13 @@ h1, h2, h3 {
   -webkit-font-smoothing: antialiased;
 }
 
+h2.big {
+  width: 100%;
+  text-align: center;
+  color: #ccc;
+  font-size: 60px; 
+}
+
 h4 {
   margin: 0px auto 0px;
 }
