@@ -55,8 +55,8 @@ activitySchema.methods.archive = function () {
 }
 
 activitySchema.statics.findAndArchive = function (query, next) {
-  return this.collection.findAndModify(query, [],
-    { $set: { _archived: true }}, {}, next);
+  return this.collection.update(query, 
+    { $set: { _archived: true }}, { multi: true }, next)
 }
 
 var Activity = mongoose.model('Activity', activitySchema)

@@ -238,6 +238,7 @@ router.post('/ack', function (req, res) {
         timestamp: { $lte: order.until }
       }, function (err) {
         if (err) return res.status(304)
+        order.remove()
         res.status(200) 
       })
     })
