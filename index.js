@@ -234,8 +234,9 @@ router.post('/ack', function (req, res) {
     var orderId = body.order.custom
     return Order.findById(orderId, function (err, order) {
       if (err || !order) return res.status(304)
-      var op = Activity.remove({ timestamp: { $lte: order.until }})
-      op.exec(function (err) {
+      Activity.findAndArchive({ 
+        timestamp: { $lte: order.until }
+      }, function (err) {
         if (err) return res.status(304)
         res.status(200) 
       })

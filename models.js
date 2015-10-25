@@ -63,7 +63,13 @@ var orderSchema = Schema({
   versionKey: false
 }) 
 
+orderSchema.statics.findAndArchive = function (query, next) {
+  return this.collection.findAndModify(query, [],
+    { $set: { _archived: true }}, {}, next);
+}
+
 var Order = mongoose.model('Order', orderSchema)
+
 
 module.exports = {
   User: User,
