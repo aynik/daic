@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div id="content margin-left">
+  <header>
+    <section id="logo">
+      <span class="daic">daic <em>{{ prefix }}</em></span>
+      <span class="description">daily activity information center</span>
+    </section>
+  </header>
+  <section id="login">
+    <form method="post">
+      <input type="text" name="username">
+      <input type="password" name="password">
+      <input class="hidden" type="submit">
+    </form>
+    <a class="on button" onclick="document.forms[0].submit()" href="#">Login</a>
+    {% if messages.length %}
+      {% for message in messages %}
+        {% if message.type == 'error' %}
+          <p class="message">
+            <span class="error"></span>
+            <span class="error-message">{{ message.text }}</span>
+          </p>
+        {% elif message.type == 'warn' %}
+          <p class="message">
+            <span class="warn"></span>
+            <span class="warn-message">{{ message.text }}</span>
+          </p>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

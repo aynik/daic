@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+{% include 'navigation.html' %}
+<div id="content">
+  <div id="activity">
+    {% for activities in daily %}
+      <br class="clearfix">
+      <ul class="tags">
+        <li>
+          <span class="tag">{{ activities[0].timestamp|date('D, d M Y') }}</span>
+        </li>
+      </ul>
+      {% for activity in activities %}
+        {% set minutes = Math.round(activity.timedelta / 1000 / 60) %}
+        <div class="box">
+          <div class="boxInner">
+            <a href="/media/{{ activity.hash }}">
+              <img src="/media/{{ activity.hash }}">
+            </a>
+            <div class="activity" style="width: {{ (activity.keystrokes / 5) / minutes }}%"></div>
+            <div class="titleBox">
+              <span>{{ activity.user.username }}</span> -
+              <span>{{ activity.timestamp|date('H:i:s') }}</span> -
+              <span>{{ minutes }}mins</span>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+  <br class="clearfix">
+  <div class="center margin20">
+    {% include 'checkout.html' %}
+  </div>
+</div>
+{% endblock %}
