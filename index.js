@@ -16,7 +16,7 @@ var models = require('./models')
 var app = express()
 var router = express.Router()
 
-var USD_RATE = 0.5 // Per 1min
+var USD_RATE = 0.01 // Per 1min
 
 var coinbaseKey = process.env.COINBASE_KEY || ''
 var coinbaseSecret = process.env.COINBASE_SECRET || ''
@@ -228,8 +228,20 @@ router.get('/archived', ensureAuth, function (req, res) {
 })
 
 router.post('/ack', function (req, res) {
-  console.log("CUSTOM", req.body.order.custom)
-  res.end()
+  var body = req.body
+  console.log("ACK", body)
+  if (body.order && body.order.custom) {
+    var orderId = body.order.custom
+    return Order.findById(orderId, function (err, order) {
+      if (err || !order) return res.status(304)
+      var op = Activity.remove({ timestamp: { $lte: order.until }})
+      op.exec(function (err) {
+        if (err) return res.status(304)
+        res.status(200) 
+      })
+    })
+  }
+  res.status(304)
 })
 
 router.get('/media/:hash', function (req, res) {
