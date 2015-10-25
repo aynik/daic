@@ -5,6 +5,7 @@
 <div id="content">
   <div id="activity">
     {% if Object.keys(daily).length %}
+      {% set tabindex = 1 %}
       {% for activities in daily %}
         <br class="clearfix">
         <ul class="tags">
@@ -15,18 +16,17 @@
         {% for activity in activities %}
           {% set minutes = Math.round(activity.timedelta / 1000 / 60) %}
           <div class="box">
-            <div class="boxInner">
-              <a href="/media/{{ activity.hash }}">
-                <img src="/media/{{ activity.hash }}">
-              </a>
+            <a tabindex="{{ tabindex }}" class="boxInner">
+              <img src="/media/{{ activity.hash }}">
               <div class="activity" style="width: {{ (activity.keystrokes / 5) / minutes }}%"></div>
               <div class="titleBox">
                 <span>{{ activity.user.username }}</span> -
                 <span>{{ activity.timestamp|date('H:i:s') }}</span> -
                 <span>{{ minutes }}mins</span>
               </div>
-            </div>
+            </a>
           </div>
+          {% set tabindex = tabindex + 1 %}
         {% endfor %}
       {% endfor %}
   {% else %}

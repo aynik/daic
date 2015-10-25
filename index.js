@@ -247,6 +247,7 @@ router.get('/media/:hash', function (req, res) {
   var query = { hash: params.hash }
   Activity.findOne(query, function (err, activity) {
     if (err) return res.status(500)
+    if (!activity) return res.status(404)
     res.setHeader('Content-Type', 'image/jpg')
     res.send(activity._image)
   })
