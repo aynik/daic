@@ -217,7 +217,7 @@ router.get('/archived', ensureAuth, function (req, res) {
       daily: {}, 
       checkout: {} 
     })
-  })
+  }))
 })
 
 router.post('/ack', function (req, res) {
