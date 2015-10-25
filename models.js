@@ -54,6 +54,11 @@ activitySchema.methods.archive = function () {
   this._archived = true
 }
 
+activitySchema.statics.findAndArchive = function (query, next) {
+  return this.collection.findAndModify(query, [],
+    { $set: { _archived: true }}, {}, next);
+}
+
 var Activity = mongoose.model('Activity', activitySchema)
 
 var orderSchema = Schema({
@@ -63,13 +68,7 @@ var orderSchema = Schema({
   versionKey: false
 }) 
 
-orderSchema.statics.findAndArchive = function (query, next) {
-  return this.collection.findAndModify(query, [],
-    { $set: { _archived: true }}, {}, next);
-}
-
 var Order = mongoose.model('Order', orderSchema)
-
 
 module.exports = {
   User: User,
