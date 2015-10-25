@@ -175,7 +175,7 @@ router.get('/current', ensureAuth, function (req, res) {
           description: result.hours + 'h ' +
             result.mins + 'm ' +
             'between ' + result.dates[0] +
-            ' and ' + result.dates[dates.length-1],
+            ' and ' + result.dates[result.dates.length-1],
           type: 'order',
           style: 'custom_large',
           success_url: 'http://daic-smoogs.herokuapp.com/current',
