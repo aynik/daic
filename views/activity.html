@@ -9,7 +9,8 @@
         <br class="clearfix">
         <ul class="tags">
           <li>
-            <span class="tag">{{ activities[0].timestamp|date('D, d M Y') }}</span>
+            {% set fst = activities[0].timestamp %}
+            <span class="tag">{{ fst|date('D, d M Y') }}</span>
           </li>
         </ul>
         {% for activity in activities %}
@@ -18,8 +19,7 @@
           <div class="box">
             <a class="boxInner">
               <img src="/media/{{ activity.hash }}">
-              <div class="activity" 
-                style="width: {{ score.toFixed(2) }}%"></div>
+              <div class="activity" style="width: {{ score.toFixed(2) }}%"></div>
               <div class="titleBox">
                 <span>{{ activity.user.username }}</span> -
                 <span>{{ activity.timestamp|date('H:i:s') }}</span> -
