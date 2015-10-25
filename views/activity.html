@@ -13,8 +13,8 @@
           </li>
         </ul>
         {% for activity in activities %}
-          {% set score = (activity.keystrokes / 4) / minutes %}
           {% set minutes = activity.timedelta / 1000 / 60 %}
+          {% set score = (activity.keystrokes / 4) / minutes %}
           <div class="box">
             <a class="boxInner">
               <img src="/media/{{ activity.hash }}">
