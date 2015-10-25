@@ -523,16 +523,14 @@ html[xmlns] .clearfix {
   transition: -webkit-transform 0.25s ease;
 }
 
-.boxInner:active img,
-.boxInner:focus img {
+.boxInner:active img {
   height: 98%;
   width: auto;
   position: relative;
   z-index: 2;
 }
 
-.boxInner:active,
-.boxInner:focus {
+.boxInner:active {
   width: 300%;
   margin-left: -100%;
   height: 100%;
@@ -540,10 +538,6 @@ html[xmlns] .clearfix {
   overflow: visible;
   text-align: center;
   z-index: 2;
-}
-.boxInner:active .titleBox,
-.boxInner:focus .titleBox {
-  display: none;
 }
 
 .boxInner .titleBox {
@@ -562,6 +556,11 @@ html[xmlns] .clearfix {
   -o-transition: all 0.3s ease-out;
   transition: all 0.3s ease-out;
 }
+
+.boxInner:active .titleBox {
+  display: none;
+}
+
 .activity {
   border-top: 1px solid #00ff00;
   position: relative;
