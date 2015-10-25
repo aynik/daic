@@ -6,6 +6,7 @@ var passport = require('passport')
 var passportLocal = require('passport-local')
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
+var cookieSession = require('cookie-session')
 var flash = require('connect-flash')
 var serveStatic = require('serve-static')
 var session = require('express-session')
@@ -38,10 +39,9 @@ app.use(bodyParser.json({
 app.use(bodyParser.urlencoded({ 
   extended: true 
 }))
-app.use(session({ 
+app.use(cookieSession({
   secret: 'L8cjAqiaQkZxRlLa6M4m1C5TyvMmOAiIOT',
-  resave: false,
-  saveUninitialized: false
+  cookie: { maxAge: 60 * 60 * 1000 }
 }))
 app.use(serveStatic('public'))
 

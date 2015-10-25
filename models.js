@@ -4,7 +4,7 @@ var passportLocalMongoose = require('passport-local-mongoose')
 
 var Schema = mongoose.Schema
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost/daic')
+mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/daic')
 
 var userSchema = Schema({}, {
   autoIndex: true,
