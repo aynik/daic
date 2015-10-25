@@ -98,7 +98,10 @@ var unpackFlash = function(req, res, next) {
 }
 
 router.get('/login', forbidReauth, unpackFlash, function (req, res) {
-  res.render('login', { prefix: prefix, messages: req.session.messages || [] })
+  res.render('login', { 
+    prefix: prefix, 
+    messages: req.session.messages || [] 
+  })
 })
 
 router.post('/login', passport.authenticate('local', {
