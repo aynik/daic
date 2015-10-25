@@ -122,44 +122,51 @@ router.get('/current', ensureAuth, function (req, res) {
   
   var op = models.Activity.find().sort('timestamp').populate('user')
   op.exec(function (err, activities) {
-    var activity
-    var date
-    var daily = {}
-    var minutes = 0
-    for (var a = 0, l = activities.length; a < l; a++) {
-      activity = activities[a]
-      date = activity.timestamp.toISOString().split('T')[0]
-      daily[date] = daily[date] || []
-      daily[date].push(activities[a])
-      minutes += Math.round(activity.timedelta / 1000 / 60) 
-    } 
-    var usd = minutes * USD_RATE 
-    var dates = Object.keys(daily).map(function (date) {
-      return date.split('-').reverse().join('/')
-    })
-    var hours = Math.ceil(minutes / 60)
-    var mins = minutes % 60
-    coinbaseClient.createCheckout({
-      amount: usd.toFixed(2),
-      currency: 'USD',
-      name: 'Development services',
-      description: hours + 'h ' + mins + 'm ' +
-        'between ' + dates[0] + ' and ' + dates[dates.length-1],
-      type: 'order',
-      style: 'custom_small',
-      success_url: 'http://daic-smoogs.herokuapp.com/current',
-      cancel_url: 'http://daic-smoogs.herokuapp.com/current',
-      auto_redirect: true,
-      metadata: {
-        until: activities[activities.length-1].timestamp 
-      }
-    }, function (err, checkout) {
-      if (err) return res.status(500)
-      res.render('activity', { 
-        prefix: prefix, 
-        daily: daily, 
-        checkout: checkout 
+    if (activities) {
+      var activity
+      var date
+      var daily = {}
+      var minutes = 0
+      for (var a = 0, l = activities.length; a < l; a++) {
+        activity = activities[a]
+        date = activity.timestamp.toISOString().split('T')[0]
+        daily[date] = daily[date] || []
+        daily[date].push(activities[a])
+        minutes += Math.round(activity.timedelta / 1000 / 60) 
+      } 
+      var usd = minutes * USD_RATE 
+      var dates = Object.keys(daily).map(function (date) {
+        return date.split('-').reverse().join('/')
       })
+      var hours = Math.ceil(minutes / 60)
+      var mins = minutes % 60
+      coinbaseClient.createCheckout({
+        amount: usd.toFixed(2),
+        currency: 'USD',
+        name: 'Development services',
+        description: hours + 'h ' + mins + 'm ' +
+          'between ' + dates[0] + ' and ' + dates[dates.length-1],
+        type: 'order',
+        style: 'custom_small',
+        success_url: 'http://daic-smoogs.herokuapp.com/current',
+        cancel_url: 'http://daic-smoogs.herokuapp.com/current',
+        auto_redirect: true,
+        metadata: {
+          until: activities[activities.length-1].timestamp 
+        }
+      }, function (err, checkout) {
+        if (err) return res.status(500)
+        res.render('activity', { 
+          prefix: prefix, 
+          daily: daily, 
+          checkout: checkout 
+        })
+      })
+    }
+    res.render('activity', { 
+      prefix: prefix, 
+      daily: {}, 
+      checkout: {} 
     })
   })
 })
