@@ -10,13 +10,14 @@ var cookieSession = require('cookie-session')
 var flash = require('connect-flash')
 var serveStatic = require('serve-static')
 var session = require('express-session')
+var connectMongo = require('connect-mongo')
 var swig = require('swig')
 var models = require('./models')
 
 var app = express()
 var router = express.Router()
 
-var USD_RATE = 0.01 // Per 1min
+var USD_RATE = 0.5 // Per 1min
 
 var coinbaseKey = process.env.COINBASE_KEY || ''
 var coinbaseSecret = process.env.COINBASE_SECRET || ''
@@ -25,6 +26,7 @@ var port = process.env.PORT || 7000
 
 var CoinbaseClient = coinbase.Client
 var LocalStrategy = passportLocal.Strategy
+var MongoStore = connectMongo(session)
 var User = models.User
 var Activity = models.Activity
 var Order = models.Order
@@ -41,9 +43,13 @@ app.use(bodyParser.json({
 app.use(bodyParser.urlencoded({ 
   extended: true 
 }))
-app.use(cookieSession({
+app.use(session({
+  resave: true,
+  saveUninitialized: false,  
   secret: 'L8cjAqiaQkZxRlLa6M4m1C5TyvMmOAiIOT',
-  cookie: { maxAge: 60 * 60 * 1000 }
+  store: new MongoStore({ 
+    mongooseConnection: models.mongoose.connection 
+  }) 
 }))
 app.use(serveStatic('public'))
 
