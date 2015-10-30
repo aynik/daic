@@ -507,8 +507,9 @@ html[xmlns] .clearfix {
 .box {
   float: left;
   position: relative;
-  width: 16.6%;
-  padding-bottom: 11%;
+  width: 17.9%;
+  padding-bottom: 12%;
+  margin-right: -19px;
 }
 .boxInner {
   position: absolute;
@@ -520,7 +521,22 @@ html[xmlns] .clearfix {
 }
 .boxInner img {
   height: 100%;
-  transition: -webkit-transform 0.25s ease;
+  transition: 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  -webkit-transform 0.25s ease;
 }
 
 .boxInner:active img {
@@ -585,7 +601,8 @@ html[xmlns] .clearfix {
 @media only screen and (max-width : 1050px) and (min-width : 651px) {
   /* Small desktop / ipad view: 3 tiles */
   .box {
-   width: 33.3%;
-   padding-bottom: 22.3%;
+   width: 35%;
+   /* padding: 0 0 22.3% 0 !important; */
+   padding-bottom: 23%;
   }
 }
